@@ -1,5 +1,5 @@
 name: trans
-description: "Transcribe one lecture from Tongji Look to SRT + TXT using BcutASR. Optionally download slides in parallel during transcription."
+description: "Transcribe one lecture from Tongji Look to SRT + TXT using Alibaba Cloud Fun-ASR by default. Optionally download slides in parallel during transcription."
 license: MIT
 metadata:
   author: WALKERKILLER

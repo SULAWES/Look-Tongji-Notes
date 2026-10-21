@@ -16,6 +16,12 @@ Generate detailed study notes from lecture transcript and slides.
 - User says `/note` or "write notes for this lecture".
 - After transcribing a lecture, the user wants a structured Markdown study note.
 
+## Default ASR
+
+Use Alibaba Cloud **Fun-ASR** (`ASR_ENGINE=fun-asr`) with `DASHSCOPE_API_KEY` from the skill root `.env`. Setup accepts the key via hidden terminal input; never request it in chat. Audio is uploaded to private temporary storage automatically, without a user OSS bucket. This is a paid cloud service; honor the user's existing upload authorization. Never silently fall back to another provider or local model.
+
+Follow [Fun-ASR configuration and recovery](../../references/fun-asr.md). Reuse saved task IDs and results. A `submitting` or `failed` checkpoint needs inspection; batch retries must not delete it or create a replacement paid task automatically.
+
 ## Workflow
 
 1. Default combined command:
@@ -36,7 +42,7 @@ python "<SKILL_DIR>/../../scripts/look_tongji.py" note \
 
 ## Important: `note` Re-Runs Transcription
 
-**`note` always re-downloads the video and re-runs ASR**, even if the lecture was already transcribed. This is by design — `note` = transcribe + slide + note in one combined operation.
+**`note` downloads audio and slides, then uses Fun-ASR by default.** Identical audio and recognition settings reuse the cached Fun-ASR result or resume the saved task; this avoids another paid submission. The agent then writes the note.
 
 **If you already ran `transcribe` separately**, do NOT run `note`. Instead:
 1. Run `slide` to download slides (if not already done)

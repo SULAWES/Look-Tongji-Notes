@@ -1,9 +1,4 @@
-"""Speech-to-text using BcutASR (Bilibili free cloud ASR) with SRT output.
-
-Downloads audio via ffmpeg to a temp file, uploads to Bilibili's
-cloud ASR, and polls for the result. Returns both plain text and
-SRT-formatted subtitles with timestamps.
-"""
+"""Speech-to-text using Fun-ASR by default, or explicitly selected BcutASR."""
 
 import json
 import os
@@ -167,16 +162,22 @@ class BcutASRClient:
 
 
 class Transcriber:
-    """ASR transcriber using BcutASR with retry mechanism."""
+    """Cloud ASR transcriber; Fun-ASR checkpoints protect paid submissions."""
 
     def __init__(self):
         self._asr = None
         self._last_transcript = ""
         self._last_duration = 0.0
 
-    def _get_asr(self) -> BcutASRClient:
+    def _get_asr(self):
         if self._asr is None:
-            self._asr = BcutASRClient()
+            if config.ASR_ENGINE == "fun-asr":
+                from .fun_asr import FunASRClient
+                self._asr = FunASRClient()
+            elif config.ASR_ENGINE == "bcut":
+                self._asr = BcutASRClient()
+            else:
+                raise TranscriptionError(f"Unsupported ASR_ENGINE: {config.ASR_ENGINE}")
         return self._asr
 
     def _download_audio(self, url: str, http_headers: str = None,
@@ -359,12 +360,12 @@ class Transcriber:
 
     def transcribe_url(self, url: str, timeout: int = 7200,
                        http_headers: str = None) -> tuple[str, str, list[dict]]:
-        """Stream audio from URL, transcribe with BcutASR.
+        """Stream audio from URL and transcribe with the configured cloud provider.
 
         Returns:
             (plain_text, srt_content, utterances)
         """
-        max_retries = config.MAX_ASR_RETRIES
+        max_retries = 1 if config.ASR_ENGINE == "fun-asr" else config.MAX_ASR_RETRIES
         backoff_base = config.ASR_RETRY_BACKOFF
         asr = self._get_asr()
 
@@ -376,7 +377,10 @@ class Transcriber:
                 tmp_path = self._download_audio(url, http_headers)
 
                 t0 = time.time()
-                plain_text, srt_content, utterances = asr.transcribe_file(tmp_path)
+                if config.ASR_ENGINE == "fun-asr":
+                    plain_text, srt_content, utterances = asr.transcribe_file(tmp_path, timeout=timeout)
+                else:
+                    plain_text, srt_content, utterances = asr.transcribe_file(tmp_path)
                 elapsed = time.time() - t0
 
                 if not plain_text or not plain_text.strip():

@@ -16,6 +16,12 @@ Transcribe one lecture video from look.tongji.edu.cn and optionally download sli
 - User says `/trans` or "transcribe this lecture".
 - User provides a lecture URL or course_id + sub_id.
 
+## Default ASR
+
+Use Alibaba Cloud **Fun-ASR** (`ASR_ENGINE=fun-asr`) with `DASHSCOPE_API_KEY` from the skill root `.env`. Setup accepts the key via hidden terminal input; never request it in chat. Audio is uploaded to private temporary storage automatically, without a user OSS bucket. This is a paid cloud service; honor the user's existing upload authorization. Never silently fall back to another provider or local model.
+
+Follow [Fun-ASR configuration and recovery](../../references/fun-asr.md). Reuse saved task IDs and results. A `submitting` or `failed` checkpoint needs inspection; batch retries must not delete it or create a replacement paid task automatically.
+
 ## Workflow
 
 1. Resolve lecture with URL or IDs:

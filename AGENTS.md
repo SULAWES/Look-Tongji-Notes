@@ -4,7 +4,7 @@
 # Look-Tongji-Notes
 
 ## Purpose
-Root of the Look Tongji Notes skill repository. Provides a multi-agent skill + CLI for processing lectures from Tongji Look (`look.tongji.edu.cn`): IAM SSO login, course listing, lecture transcription (SRT/TXT via BcutASR), slide snapshot download, supplementary material import, timeline outline generation, Markdown study-note writing, and static course knowledge-base site generation via the vendored `llm-wiki` library. Packaged as both a standalone CLI and an installable skill for Claude Code, Codex CLI, Cursor, Gemini CLI, OpenClaw, OpenCode, Hermes Agent, and GitHub Copilot.
+Root of the Look Tongji Notes skill repository. Provides a multi-agent skill + CLI for processing lectures from Tongji Look (`look.tongji.edu.cn`): IAM SSO login, course listing, lecture transcription (SRT/TXT via Fun-ASR by default), slide snapshot download, supplementary material import, timeline outline generation, Markdown study-note writing, and static course knowledge-base site generation via the vendored `llm-wiki` library. Packaged as both a standalone CLI and an installable skill for Claude Code, Codex CLI, Cursor, Gemini CLI, OpenClaw, OpenCode, Hermes Agent, and GitHub Copilot.
 
 ## Key Files
 
@@ -74,6 +74,7 @@ Root of the Look Tongji Notes skill repository. Provides a multi-agent skill + C
 - `python-dotenv` — `.env` file loading
 - `markdown` / `markitdown[all]` — Supplementary material Markdown conversion
 - `ffmpeg` (system) — Audio extraction from lecture video streams
-- `BcutASR` (Bilibili cloud API) — Free cloud speech-to-text for transcription
+- Alibaba Cloud `Fun-ASR` — Default paid cloud transcription, private temporary upload (no user OSS bucket), persistent checkpoints in `state/fun-asr/`. See `references/fun-asr.md`.
+- `BcutASR` — Legacy opt-in via `ASR_ENGINE=bcut`; never an automatic fallback.
 
 <!-- MANUAL: -->

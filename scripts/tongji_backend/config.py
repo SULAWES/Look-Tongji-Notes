@@ -33,6 +33,8 @@ USER_AGENT = os.environ.get(
 )
 
 # ── ASR ──
-ASR_ENGINE = os.environ.get("ASR_ENGINE", "bcut")
+ASR_ENGINE = os.environ.get("ASR_ENGINE", "fun-asr").strip().lower()
+DASHSCOPE_API_KEY = os.environ.get("DASHSCOPE_API_KEY", "")
+FUN_ASR_STATE_DIR = Path(os.environ.get("FUN_ASR_STATE_DIR", str(_SKILL_ROOT / "state" / "fun-asr")))
 MAX_ASR_RETRIES = int(os.environ.get("MAX_ASR_RETRIES", "5"))
 ASR_RETRY_BACKOFF = int(os.environ.get("ASR_RETRY_BACKOFF", "30"))

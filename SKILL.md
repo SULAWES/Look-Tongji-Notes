@@ -28,6 +28,13 @@ Each command has its own `skills/<name>/SKILL.md` with detailed workflow instruc
 - Auth cache in `<SKILL_DIR>/state/`.
 - Workspace config stored outside the skill tree for persistence across updates.
 
+### Default Transcription
+- Use Alibaba Cloud **Fun-ASR** for `/trans`, `/note`, and `/ralphtrans`.
+- Configure `DASHSCOPE_API_KEY` (Beijing) in the skill root `.env`; `/setup` supports hidden input.
+- Local audio uploads automatically to Alibaba private temporary storage; no user OSS bucket or Bcut intermediary is required.
+- Honor existing cloud-upload authorization. Do not silently switch to Bcut, Doubao, or a local model.
+- Preserve paid-task checkpoints and cached results under `state/fun-asr/`. See [Fun-ASR configuration and recovery](references/fun-asr.md).
+
 ### Agent-Content Boundary
 - The CLI fetches, transcribes, downloads, and converts artifacts.
 - The agent generates timeline outlines, study notes, and cheat sheet content.

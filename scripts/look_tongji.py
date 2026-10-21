@@ -45,7 +45,7 @@ def _skill_root() -> Path:
 
 
 def _env_path() -> Path:
-    return _skill_root() / ".env"
+    return Path(os.environ.get("LOOK_TONGJI_ENV_PATH", str(_skill_root() / ".env")))
 
 
 def _state_dir() -> Path:
@@ -406,9 +406,23 @@ def cmd_setup(args: argparse.Namespace) -> int:
         except Exception:
             existing = {}
 
+    engine = os.environ.get("ASR_ENGINE", existing.get("ASR_ENGINE", "fun-asr")).strip().lower()
+    if engine not in ("fun-asr", "bcut"):
+        _print_err("ASR_ENGINE must be fun-asr or bcut.")
+        return 2
+    existing["ASR_ENGINE"] = engine
+    if engine == "fun-asr":
+        key = os.environ.get("DASHSCOPE_API_KEY", existing.get("DASHSCOPE_API_KEY", "")).strip()
+        if not key and sys.stdin.isatty():
+            key = getpass.getpass("Fun-ASR Beijing DASHSCOPE_API_KEY (hidden; Enter to configure later): ").strip()
+        if key:
+            existing["DASHSCOPE_API_KEY"] = key
+        else:
+            print("[Setup] Set DASHSCOPE_API_KEY in .env before transcription; listing courses remains available.")
     existing["TONGJI_USERNAME"] = username
     existing["TONGJI_PASSWORD"] = password
     _write_env_file(env_file, existing)
+    env_file.chmod(0o600)
     _clear_auth_session()
     try:
         workspace_config = ensure_workspace_config(
@@ -765,6 +779,7 @@ def _run_transcript_job(
     output_dir: str,
     tag: str = "Transcript",
 ) -> int:
+    from tongji_backend import config
     from tongji_backend.transcriber import NoAudioStreamError, Transcriber, TranscriptionError
 
     print(f"[{tag}] Logged in as: {username or '(unknown)'}")
@@ -822,6 +837,8 @@ def _run_transcript_job(
                     "transcript_txt": str(txt_path),
                     "subtitle_srt": str(srt_path) if srt_content else "",
                 },
+                "asr_engine": config.ASR_ENGINE,
+                "asr_model": "fun-asr" if config.ASR_ENGINE == "fun-asr" else "bcut",
                 "utterances": utterances or [],
             },
             ensure_ascii=False,

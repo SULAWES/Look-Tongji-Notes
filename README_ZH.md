@@ -19,6 +19,12 @@
 - 下载指定课程节次的 slide 截图
 - 由当前 Agent 基于转写文本 + slide 图片生成 Markdown 笔记
 
+## 默认转录：Fun-ASR
+
+本 fork 的 `/trans`、`/note`、`/ralphtrans` 默认使用阿里云 **Fun-ASR**。通过 `setup` 在终端隐藏输入北京地域的 `DASHSCOPE_API_KEY`，或填写仓库根目录 `.env`（参考 `.env.example`）。脚本自动将音频上传到阿里云私有临时存储，有效期 48 小时，**无需自行开通 OSS，也不再经必剪中转**。识别按阿里云服务计费。
+
+相同音频会复用 `state/fun-asr/` 中的任务和结果，避免重复提交。不会自动切换其他云服务或本地模型；旧版必剪仅在显式配置 `ASR_ENGINE=bcut` 时启用。详见[配置与故障恢复](references/fun-asr.md)。
+
 ## Commands
 
 | 命令 | 说明 |

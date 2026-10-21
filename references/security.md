@@ -21,3 +21,7 @@
 - Supplementary materials are copied into `raw/<course>/<session>/原始数据/materials/`.
   Only import files you are allowed to process locally.
 - Do not commit `.env`, `state/`, JWT cache files, or private course materials to a public repository.
+
+## Fun-ASR
+
+`DASHSCOPE_API_KEY` belongs only in the ignored `.env` or environment. Never print it, pass it in chat, or include it in published artifacts. The default cloud transcription uploads audio directly to Alibaba private temporary storage (48 hours); honor existing user authorization. Keep `state/fun-asr/` private: it includes raw transcripts, task IDs and potentially signed resource URLs. Do not publish the cache or copy it into the course wiki. See [Fun-ASR](fun-asr.md).

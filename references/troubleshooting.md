@@ -51,3 +51,7 @@ If you want to force a fresh login:
 - Static site does not show new notes
   - Meaning: the agent has not written `<course_id>_<sub_id>_notes.md` yet, or the site was not rebuilt.
   - Fix: write the notes into the session raw-data folder, then run `python "<SKILL_DIR>/scripts/look_tongji.py" wiki`.
+
+## Fun-ASR (default)
+
+Missing `DASHSCOPE_API_KEY`: configure a Beijing Model Studio key in the skill root `.env`; this is not an OSS AccessKey. You do not need your own OSS bucket. A polling/network failure retains the task ID: rerun the same command. For `submitting`, `failed`, expired results, or migration, follow [Fun-ASR recovery](fun-asr.md); never clear checkpoints automatically or switch providers to bypass an error.

@@ -61,6 +61,12 @@ In Claude Code:
 | Cursor | `.cursor-plugin/plugin.json` → `./skills/` |
 | Gemini CLI / OpenClaw / OpenCode / Hermes Agent | `plugin.json` → `./skills/` |
 
+## Default transcription: Fun-ASR
+
+This fork defaults to Alibaba Cloud **Fun-ASR** for all transcription workflows. Run `setup` to enter a Beijing DashScope `DASHSCOPE_API_KEY` privately, or set it in the repository root `.env` (see `.env.example`). Audio uploads directly to private 48-hour temporary storage; you do **not** need to open an OSS bucket or use Bcut as an intermediary. Recognition is billed by Alibaba Cloud.
+
+Identical audio reuses saved tasks/results in `state/fun-asr/`. No automatic provider or local-model fallback occurs. Legacy Bcut is available only with explicit `ASR_ENGINE=bcut`. See [configuration, billing links and recovery](references/fun-asr.md).
+
 ## Usage (CLI)
 
 `<SKILL_DIR>` is the folder that contains `SKILL.md`.
