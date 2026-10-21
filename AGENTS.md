@@ -75,6 +75,6 @@ Root of the Look Tongji Notes skill repository. Provides a multi-agent skill + C
 - `markdown` / `markitdown[all]` — Supplementary material Markdown conversion
 - `ffmpeg` (system) — Audio extraction from lecture video streams
 - Alibaba Cloud `Fun-ASR` — Default paid cloud transcription, private temporary upload (no user OSS bucket), persistent checkpoints in `state/fun-asr/`. See `references/fun-asr.md`.
-- `BcutASR` — Legacy opt-in via `ASR_ENGINE=bcut`; never an automatic fallback.
+- `BcutASR` — Optional fallback after Fun-ASR failure. The agent must ask for and receive explicit approval covering the affected lectures before uploading to Bilibili. Use process-scoped `ASR_ENGINE=bcut`; preserve Fun-ASR checkpoints and its default configuration. Never switch automatically.
 
 <!-- MANUAL: -->

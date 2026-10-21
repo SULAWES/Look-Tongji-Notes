@@ -33,7 +33,31 @@ DASHSCOPE_API_KEY="你的北京地域百炼 API Key"
 - 不主动重试创建任务的 POST。进程锁防止同一缓存任务并发提交。轮询 HTTP 错误会保留状态并退出，可再次运行恢复。
 - `FUN_ASR_STATE_DIR` 可指定持久私有目录。清空缓存、换 key 或改变音频会失去复用能力。迁移 skill 时可保留此目录。
 
-只在用户明确选择必剪时配置 `ASR_ENGINE=bcut`。任何 Fun-ASR 错误都不会触发 Bcut、豆包或本地模型回退。遵循本次会话已经给出的云端上传授权，不要重复询问已授权的同一范围。
+## 可选 BcutASR fallback：使用前询问
+
+Fun-ASR 仍是默认引擎。失败时可以向用户提出使用 BcutASR（必剪）作为备用，但不能自动切换。
+
+1. 说明 Fun-ASR 失败原因、受影响的课时，以及音频将上传到哔哩哔哩云端识别。询问：“是否同意这次改用 BcutASR 识别这些课时？”批处理应列明或描述授权范围，可一次询问整组失败课时。
+2. 等待用户明确同意本次 fallback 及其范围。此前笼统的 Bcut 上传授权、未回复或超时不代表同意本次切换。若用户已经明确同意了本次 fallback 的同一范围，不重复询问。
+3. 同意后仅在获准的命令进程设置 `ASR_ENGINE=bcut`；不要修改 `.env` 的默认值。跨平台调用可使用 Python 子进程：
+
+```python
+import os
+import subprocess
+import sys
+
+# Only execute after explicit user approval for this lecture/fallback.
+env = dict(os.environ, ASR_ENGINE="bcut")
+subprocess.run([
+    sys.executable, "<skill_root>/scripts/look_tongji.py", "transcribe",
+    "--course-id", "<course_id>", "--sub-id", "<sub_id>",
+], env=env, check=True)
+```
+
+4. 保留 Fun-ASR 的任务与缓存。若任务提交状态不明或仍在运行，告知用户原任务可能继续计费；切换 Bcut 不会取消阿里云任务。Bcut 输出元数据会标注 `asr_engine=bcut`，生成笔记时如需记录来源，应如实注明。
+5. 拒绝或未回复时不上传至 Bcut，保留待处理状态并报告失败。仅授权部分课时时，其余仍使用 Fun-ASR；批处理不得扩大 fallback 范围。CLI 本身不自动交互切换，由调用 skill 的 agent 执行询问和范围控制。
+
+豆包和本地模型不作为 fallback。
 
 ## 官方接口
 

@@ -18,7 +18,7 @@ Batch transcribe all playable lectures for a course with checkpoint/resume.
 
 ## Default ASR
 
-Use Alibaba Cloud **Fun-ASR** (`ASR_ENGINE=fun-asr`) with `DASHSCOPE_API_KEY` from the skill root `.env`. Setup accepts the key via hidden terminal input; never request it in chat. Audio is uploaded to private temporary storage automatically, without a user OSS bucket. This is a paid cloud service; honor the user's existing upload authorization. Never silently fall back to another provider or local model.
+Use Alibaba Cloud **Fun-ASR** (`ASR_ENGINE=fun-asr`) with `DASHSCOPE_API_KEY` from the skill root `.env`. Setup accepts the key via hidden terminal input; never request it in chat. Audio is uploaded to private temporary storage automatically, without a user OSS bucket. This is a paid cloud service; honor the user's existing upload authorization. If Fun-ASR fails, offer BcutASR as an optional fallback. Before any Bcut upload, ask the user to approve the affected lecture(s) and explain that audio will go to Bilibili. Wait for explicit consent for this fallback and scope; silence or historical general upload consent is not approval. Use a process-scoped `ASR_ENGINE=bcut` only after consent, preserve Fun-ASR checkpoints, and keep `.env` set to Fun-ASR. If declined or unanswered, report the failure and leave the affected work pending. No Doubao or local-model fallback. See the fallback procedure below.
 
 Follow [Fun-ASR configuration and recovery](../../references/fun-asr.md). Reuse saved task IDs and results. A `submitting` or `failed` checkpoint needs inspection; batch retries must not delete it or create a replacement paid task automatically.
 

@@ -32,7 +32,9 @@ Each command has its own `skills/<name>/SKILL.md` with detailed workflow instruc
 - Use Alibaba Cloud **Fun-ASR** for `/trans`, `/note`, and `/ralphtrans`.
 - Configure `DASHSCOPE_API_KEY` (Beijing) in the skill root `.env`; `/setup` supports hidden input.
 - Local audio uploads automatically to Alibaba private temporary storage; no user OSS bucket or Bcut intermediary is required.
-- Honor existing cloud-upload authorization. Do not silently switch to Bcut, Doubao, or a local model.
+- Fun-ASR remains the default. If it fails, offer BcutASR as an optional fallback and ask the user before using it: explain the failure, which lectures are affected, and that their audio will be uploaded to Bilibili.
+- Wait for explicit consent covering this fallback and scope; general historical Bcut upload consent is not enough. After consent, set `ASR_ENGINE=bcut` only for the approved invocation(s), never persist it in `.env`. If declined or unanswered, keep the task pending and report the Fun-ASR failure. Do not use Doubao or a local model as a fallback.
+- Preserve Fun-ASR checkpoints even when Bcut is approved; an already submitted paid task may still run and incur charges. See the fallback procedure in `references/fun-asr.md`.
 - Preserve paid-task checkpoints and cached results under `state/fun-asr/`. See [Fun-ASR configuration and recovery](references/fun-asr.md).
 
 ### Agent-Content Boundary
