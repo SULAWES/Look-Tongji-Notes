@@ -63,3 +63,7 @@ python "<SKILL_DIR>/../../scripts/look_tongji.py" batch-transcribe --course-id "
 ## Where `<SKILL_DIR>` Points
 
 `<SKILL_DIR>` is the directory containing this `SKILL.md`. Shared scripts (`look_tongji.py`, `timeline_tools.py`, `tongji_backend/`) and references live two levels up in the repository root (`<SKILL_DIR>/../../scripts/` and `<SKILL_DIR>/../../references/`).
+
+## Optional Balance Check
+
+Configure `ALIYUN_BILLING_PROFILE` to display the account balance once before the batch. `ALIYUN_LOW_BALANCE_THRESHOLD` sets a cash-balance warning in `ALIYUN_BALANCE_CURRENCY` (default CNY). Warnings and lookup failures do not stop processing. If manually looping over lectures instead of using `batch-transcribe`, run `python "<SKILL_DIR>/../../scripts/look_tongji.py" balance` once before the loop. See [configuration](../../references/billing.md).

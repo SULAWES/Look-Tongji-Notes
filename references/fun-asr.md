@@ -63,3 +63,7 @@ subprocess.run([
 
 - [临时文件上传](https://help.aliyun.com/zh/model-studio/get-temporary-file-url)
 - [Fun-ASR 录音文件识别 HTTP API](https://help.aliyun.com/zh/model-studio/fun-asr-recorded-speech-recognition-http-api)
+
+## 可选余额查询
+
+通过独立的阿里云 CLI profile 查询账号余额，并在批量转录前展示。支持可配置的低现金余额提醒；不阻止处理、不改变 ASR 引擎。百炼 API Key 不能用于余额查询。详见[余额配置](billing.md)。

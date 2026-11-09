@@ -195,3 +195,7 @@ python "<SKILL_DIR>/../../scripts/look_tongji.py" serve --port 8765
 ## 贡献指南
 
 Coming soon.
+
+### 可选：阿里云余额查询
+
+运行 `python scripts/look_tongji.py balance` 独立查询，添加 `--json` 输出结构化数据。配置 `ALIYUN_BILLING_PROFILE` 后，Fun-ASR 批量转录开始前会展示余额；可用 `ALIYUN_LOW_BALANCE_THRESHOLD` 和 `ALIYUN_BALANCE_CURRENCY` 配置现金余额提醒。低余额或查询失败只提示，继续处理。详见[配置说明](references/billing.md)。

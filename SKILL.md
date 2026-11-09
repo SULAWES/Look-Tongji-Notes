@@ -58,3 +58,8 @@ Each command has its own `skills/<name>/SKILL.md` with detailed workflow instruc
 /wiki                    # serve local course wiki
 /page                    # deploy course wiki to GitHub Pages
 ```
+
+### Optional Account Balance
+- Run `python "<SKILL_DIR>/scripts/look_tongji.py" balance` for a read-only Alibaba Cloud balance query; add `--json` for structured output.
+- Configure `ALIYUN_BILLING_PROFILE` and optional `ALIYUN_LOW_BALANCE_THRESHOLD` / `ALIYUN_BALANCE_CURRENCY`. `batch-transcribe` displays the balance once before Fun-ASR processing. Low balance and lookup failures only warn; never change ASR engines or paid-task checkpoints.
+- See [balance setup and behavior](references/billing.md).

@@ -1036,6 +1036,44 @@ def _create_batch_state(course_id: str, lectures: list[dict[str, Any]]) -> dict[
     }
 
 
+def _billing_options(args: argparse.Namespace) -> tuple[str, str, str]:
+    from dotenv import load_dotenv
+    load_dotenv(_env_path(), override=False)
+    return (
+        args.profile if args.profile is not None else os.environ.get("ALIYUN_BILLING_PROFILE", ""),
+        args.low_balance_threshold if args.low_balance_threshold is not None else os.environ.get("ALIYUN_LOW_BALANCE_THRESHOLD", ""),
+        args.threshold_currency if args.threshold_currency is not None else os.environ.get("ALIYUN_BALANCE_CURRENCY", "CNY"),
+    )
+
+
+def cmd_balance(args: argparse.Namespace) -> int:
+    from tongji_backend.billing import BillingError, format_balance, query_balance
+    try:
+        result = query_balance(*_billing_options(args))
+    except BillingError as exc:
+        if args.json:
+            print(json.dumps({"success": False, "error": str(exc)}, ensure_ascii=False))
+        else:
+            _print_err(str(exc))
+        return 1
+    print(json.dumps(result, ensure_ascii=False) if args.json else format_balance(result))
+    return 0
+
+
+def _show_batch_balance(args: argparse.Namespace) -> None:
+    from tongji_backend.billing import BillingError, format_balance, query_balance
+    options = _billing_options(args)
+    if os.environ.get("ASR_ENGINE", "fun-asr").strip().lower() != "fun-asr":
+        return
+    if not options[0].strip():
+        print("[Balance] 未配置 ALIYUN_BILLING_PROFILE，跳过余额查询。")
+        return
+    try:
+        print(format_balance(query_balance(*options)))
+    except BillingError as exc:
+        print(f"[Warning] {exc} 批量转录继续执行。")
+
+
 def cmd_batch_transcribe(args: argparse.Namespace) -> int:
     try:
         client, username = _ensure_authenticated_client(force_login=args.force_login)
@@ -1073,6 +1111,8 @@ def cmd_batch_transcribe(args: argparse.Namespace) -> int:
     except Exception as e:
         _print_err(f"Workspace config failed: {e}")
         return 1
+
+    _show_batch_balance(args)
 
     batch_state_path = config.workspace_root / "batch_state.json"
     max_retries = max(1, int(args.max_retries))
@@ -1580,6 +1620,10 @@ def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(prog="look_tongji.py")
     sub = parser.add_subparsers(dest="cmd", required=True)
 
+    p_balance = sub.add_parser("balance", help="Query Alibaba Cloud account balance (read-only)")
+    p_balance.add_argument("--json", action="store_true", help="Output machine-readable JSON")
+    p_balance.set_defaults(func=cmd_balance)
+
     p_setup = sub.add_parser("setup", help="Check deps and write <skill>/.env")
     p_setup.add_argument("--username", default="", help="Tongji username (optional)")
     p_setup.add_argument("--password", default="", help="Tongji password (optional; avoid CLI if possible)")
@@ -1636,6 +1680,10 @@ def build_parser() -> argparse.ArgumentParser:
     p_batch.add_argument("--max-retries", type=int, default=3, help="Max retries per failed lecture")
     p_batch.add_argument("--force-login", action="store_true", help="Ignore cached JWT and login again")
     p_batch.set_defaults(func=cmd_batch_transcribe)
+    for billing_parser in (p_balance, p_batch):
+        billing_parser.add_argument("--profile", default=None, help="Alibaba Cloud billing CLI profile (or ALIYUN_BILLING_PROFILE)")
+        billing_parser.add_argument("--low-balance-threshold", default=None, help="Cash balance warning threshold (or ALIYUN_LOW_BALANCE_THRESHOLD)")
+        billing_parser.add_argument("--threshold-currency", default=None, help="Threshold currency (or ALIYUN_BALANCE_CURRENCY; default CNY)")
 
     p_slide = sub.add_parser("slide", help="Download lecture slide snapshots for one lecture")
     p_slide.add_argument("--lecture-url", default="", help="Tongji lecture page URL (best-effort parsing)")

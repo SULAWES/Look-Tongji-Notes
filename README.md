@@ -195,3 +195,7 @@ The generated workspace can also become the user's own GitHub Pages repository. 
 ## Contributing
 
 Coming soon.
+
+### Optional Alibaba Cloud balance lookup
+
+Run `python scripts/look_tongji.py balance` (or add `--json`) using a dedicated Alibaba Cloud CLI profile. Set `ALIYUN_BILLING_PROFILE` to enable a balance display before Fun-ASR batch transcription, and optionally `ALIYUN_LOW_BALANCE_THRESHOLD` / `ALIYUN_BALANCE_CURRENCY` for cash-balance warnings. Warnings never block transcription. See [setup and behavior](references/billing.md).
